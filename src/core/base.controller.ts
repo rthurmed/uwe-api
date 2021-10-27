@@ -1,5 +1,6 @@
 import { Delete, Get, Param } from "@nestjs/common";
 import { BaseService } from './base.service'
+import { ListDTO } from "./base.dto";
 
 export class BaseController<T> {
   protected service: BaseService<T>
@@ -8,8 +9,10 @@ export class BaseController<T> {
   }
 
   @Get()
-  async list(): Promise<T[]> {
-    return await this.service.list()
+  async list(): Promise<ListDTO<T>> {
+    const list = await this.service.list()
+    const dto: ListDTO<T> =  { list }
+    return dto
   }
 
   @Get(':id')
