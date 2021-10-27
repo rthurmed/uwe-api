@@ -10,7 +10,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [],
+      entities: ['dist/**/*.entity.js'],
       migrations: ['resources/migrations/*.js'],
       migrationsRun: true
     })
