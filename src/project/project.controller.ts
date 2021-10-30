@@ -1,5 +1,5 @@
 import { Body, Controller, Param, Post, Put } from '@nestjs/common';
-import { BaseController } from 'src/core/base.controller';
+import { BaseController } from '../core/base.controller';
 import { CreateProjectDTO, UpdateProjectDTO } from './project.dto';
 import { Project } from './project.entity';
 import { ProjectService } from './project.service';

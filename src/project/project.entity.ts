@@ -8,6 +8,6 @@ export class Project {
   @Column()
   name: string;
 
-  @Column({ type: 'timestamp' })
-  creation: Date
+  @Column({ type: 'date', name: 'created_at' })
+  createdAt: Date
 }
