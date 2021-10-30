@@ -16,8 +16,8 @@ export class BaseService<T> {
     return this.repository.findOne(id)
   }
 
-  create(entity: T): T {
-    return this.repository.create(entity)
+  create(entity: T): Promise<T> {
+    return this.repository.save(entity)
   }
 
   update(id: number, entity: T): Promise<T> {
