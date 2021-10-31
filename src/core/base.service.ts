@@ -1,3 +1,4 @@
+import { IPaginationOptions, paginate, Pagination } from "nestjs-typeorm-paginate";
 import { Repository } from "typeorm";
 
 export class BaseService<T> {
@@ -7,12 +8,15 @@ export class BaseService<T> {
     this.repository = repository
   }
   
-  // TODO: Implement pagination
-  list(): Promise<T[]> {
-    return this.repository.find()
+  paginate(options: IPaginationOptions): Promise<Pagination<T>> {
+    return paginate<T>(this.repository, options);
+  }
+
+  findAll(): Promise<T[]> {
+    return this.repository.find();
   }
   
-  find(id: number): Promise<T> {
+  findOne(id: number): Promise<T> {
     return this.repository.findOne(id)
   }
 
@@ -28,7 +32,7 @@ export class BaseService<T> {
     })
   }
   
-  delete(id: number) {
+  remove(id: number) {
     this.repository.delete(id)
   }
 }
