@@ -1,11 +1,12 @@
 import { Body, Controller, Param, Post, Put } from '@nestjs/common';
 import { Resource } from 'nest-keycloak-connect';
 import { BaseController } from '../core/base.controller';
-import { CreateProjectDTO, UpdateProjectDTO } from './project.dto';
-import { Project } from './project.entity';
-import { ProjectService } from './project.service';
+import { CreateProjectDTO } from './dto/create-project.dto';
+import { UpdateProjectDTO } from './dto/update-project.dto';
+import { Project } from './entities/project.entity';
+import { ProjectService } from './projects.service';
 
-@Controller('project')
+@Controller('projects')
 @Resource(Project.name)
 export class ProjectController extends BaseController<Project> {
   constructor(private readonly projectService: ProjectService) {

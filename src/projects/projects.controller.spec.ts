@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TestDatabaseModule } from '../../test/utils/database';
-import { ProjectController } from './project.controller';
-import { Project } from './project.entity';
-import { ProjectService } from './project.service';
+import { ProjectController } from './projects.controller';
+import { Project } from './entities/project.entity';
+import { ProjectService } from './projects.service';
 
 describe('ProjectController', () => {
   let projectController: ProjectController;

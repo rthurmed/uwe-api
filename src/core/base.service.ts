@@ -1,5 +1,5 @@
 import { IPaginationOptions, paginate, Pagination } from "nestjs-typeorm-paginate";
-import { Repository } from "typeorm";
+import { DeepPartial, Repository } from "typeorm";
 
 export class BaseService<T> {
   protected repository: Repository<T>
@@ -20,7 +20,7 @@ export class BaseService<T> {
     return this.repository.findOne(id)
   }
 
-  create(entity: T): Promise<T> {
+  create(entity: DeepPartial<T>): Promise<T> {
     return this.repository.save(entity)
   }
 
