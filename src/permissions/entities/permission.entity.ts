@@ -1,4 +1,4 @@
-import { Project } from "src/projects/entities/project.entity";
+import { Project } from "../../projects/entities/project.entity";
 import { Column, Entity, JoinColumn, JoinTable, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { AccessLevel } from "./access-level.enum";
 

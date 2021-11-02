@@ -1,5 +1,5 @@
 import { IsEnum, IsInt, IsObject, IsString } from "class-validator";
-import { Project } from "src/projects/entities/project.entity";
+import { Project } from "../../projects/entities/project.entity";
 import { AccessLevel } from "../entities/access-level.enum";
 import { Permission } from "../entities/permission.entity";
 

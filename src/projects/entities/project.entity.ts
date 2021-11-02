@@ -1,4 +1,4 @@
-import { Permission } from "src/permissions/entities/permission.entity";
+import { Permission } from "../../permissions/entities/permission.entity";
 import { Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: 'projects' })

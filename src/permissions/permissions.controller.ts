@@ -2,10 +2,9 @@ import { Controller, Post, Body, Param, Put } from '@nestjs/common';
 import { PermissionsService } from './permissions.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
-import { BaseController } from 'src/core/base.controller';
+import { BaseController } from '../core/base.controller';
 import { Permission } from './entities/permission.entity';
 import { Resource } from 'nest-keycloak-connect';
-import { Project } from 'src/projects/entities/project.entity';
 
 @Controller('permissions')
 @Resource(Permission.name)
