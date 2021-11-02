@@ -1,16 +1,11 @@
 import { Permission } from "../../permissions/entities/permission.entity";
-import { Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany } from "typeorm";
+import { Base } from "../../core/base.entity";
 
 @Entity({ name: 'projects' })
-export class Project {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Project extends Base {
   @Column()
   name: string;
-
-  @Column({ type: 'date', name: 'created_at', default: new Date() })
-  createdAt: Date;
 
   @OneToMany(() => Permission, (permission: Permission) => permission.project)
   permissions: Permission[];

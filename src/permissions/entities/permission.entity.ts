@@ -1,12 +1,10 @@
 import { Project } from "../../projects/entities/project.entity";
-import { Column, Entity, JoinColumn, JoinTable, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
 import { AccessLevel } from "./access-level.enum";
+import { Base } from "../../core/base.entity";
 
 @Entity({ name: 'permissions' })
-export class Permission {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Permission extends Base {
   @Column({ name: 'access_level', enum: AccessLevel, default: AccessLevel.READ })
   level: AccessLevel;
 
@@ -18,9 +16,6 @@ export class Permission {
 
   @Column({ type: 'date', name: 'revoked_at', nullable: true })
   revokedAt: Date;
-
-  @Column({ type: 'date', name: 'created_at', default: new Date() })
-  createdAt: Date;
 
   @Column({ name: 'user_id' })
   userId: string;
