@@ -3,11 +3,10 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { ProjectController } from "./projects.controller";
 import { Project } from "./entities/project.entity";
 import { ProjectService } from "./projects.service";
-
-// TODO: Use guard or middleware or pipe to allow user to access based on their permission level
+import { Permission } from "../permissions/entities/permission.entity";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Project])],
+  imports: [TypeOrmModule.forFeature([Project, Permission])],
   providers: [ProjectService],
   controllers: [ProjectController]
 })
