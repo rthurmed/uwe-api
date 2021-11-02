@@ -1,15 +1,18 @@
-import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
+import { CanActivate, ExecutionContext, Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request } from "express";
 import { Permission } from "src/permissions/entities/permission.entity";
 import { Repository } from "typeorm";
 import { Observable } from "rxjs";
+import { PermissionsService } from "src/permissions/permissions.service";
 
 @Injectable()
 export class PermissionGuard implements CanActivate {
   constructor (
     @InjectRepository(Permission)
-    private permissionRepository: Repository<Permission>
+    private permissionRepository: Repository<Permission>,
+    @Inject(PermissionsService)
+    private permissionService: PermissionsService
   ) {}
 
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
@@ -18,15 +21,8 @@ export class PermissionGuard implements CanActivate {
       const userId = req["user"].sub;
       const projectId = req.params.id;
       try {
-        const count = await this.permissionRepository.count({
-          where: {
-            userId,
-            projectId,
-            accepted: true,
-            revoked: false
-          }
-        });
-        resolve(count > 0);
+        const result = await this.permissionService.findAcceptedByUserId(userId, [projectId]);
+        resolve(result.length > 0);
       } catch (error) {
         reject(error);
       }

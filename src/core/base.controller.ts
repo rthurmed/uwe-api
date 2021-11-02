@@ -2,24 +2,36 @@ import { DefaultValuePipe, Delete, Get, Param, ParseIntPipe, Query, Req } from "
 import { BaseService } from './base.service'
 import { Pagination } from "nestjs-typeorm-paginate";
 import { Request } from "express";
+import { FindConditions, FindManyOptions } from "typeorm";
+import { AuthenticatedUser } from "nest-keycloak-connect";
+import { rejects } from "assert";
 
 export class BaseController<T> {
-  protected service: BaseService<T>
-  constructor (service: BaseService<T>) {
-    this.service = service
+  constructor (
+    protected service: BaseService<T>
+  ) {}
+
+  async getSearchOptions (request: Request, user: any): Promise<FindConditions<T> | Promise<FindManyOptions<T>>> {
+    return new Promise((resolve, rejects) => {
+      resolve({})
+    })
   }
 
   @Get()
   async findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number = 20,
-    @Req() request: Request
+    @Req() request: Request,
+    @AuthenticatedUser() user,
   ): Promise<Pagination<T>> {
-    return this.service.paginate({
-      page,
-      limit,
-      route: request.url
-    });
+    return this.service.paginate(
+      {
+        page,
+        limit,
+        route: request.url
+      },
+      await this.getSearchOptions(request, user)
+    );
   }
 
   @Get(':id')

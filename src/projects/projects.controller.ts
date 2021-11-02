@@ -1,5 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
-import { Resource } from 'nest-keycloak-connect';
+import { Body, Controller, DefaultValuePipe, Delete, Get, Param, ParseIntPipe, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
+import { Request } from 'express';
+import { AuthenticatedUser, Resource } from 'nest-keycloak-connect';
+import { Pagination } from 'nestjs-typeorm-paginate';
+import { PermissionsService } from 'src/permissions/permissions.service';
+import { FindConditions, FindManyOptions, In } from 'typeorm';
 import { BaseController } from '../core/base.controller';
 import { CreateProjectDTO } from './dto/create-project.dto';
 import { UpdateProjectDTO } from './dto/update-project.dto';
@@ -10,8 +14,20 @@ import { ProjectService } from './projects.service';
 @Controller('projects')
 @Resource(Project.name)
 export class ProjectController extends BaseController<Project> {
-  constructor(private readonly projectService: ProjectService) {
+  constructor(
+    private readonly projectService: ProjectService,
+    private readonly permissionService: PermissionsService
+  ) {
     super(projectService)
+  }
+
+  override async getSearchOptions (request: Request, user: any): Promise<FindConditions<Project> | Promise<FindManyOptions<Project>>> {
+    // Project are only shown if the user have the right permissions
+    const ids = (await this.permissionService.findAcceptedByUserId(user.sub)).map(e => e.projectId)
+    return {
+      where: { id: In(ids) },
+      relations: [ "permissions" ]
+    }
   }
 
   @Post()
@@ -45,4 +61,11 @@ export class ProjectController extends BaseController<Project> {
   ) {
     return await this.service.remove(id)
   }
+
+  // @Get()
+  // findMyProjects(
+  //   @AuthenticatedUser() user
+  // ): Promise<Project[]> {
+  //   return this.projectService.findAllByUserId(user.sub)
+  // }
 }
