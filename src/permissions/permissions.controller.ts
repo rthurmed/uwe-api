@@ -18,6 +18,9 @@ export class PermissionsController extends BaseController<Permission> {
   override async getSearchOptions (request: Request, user: any): Promise<FindConditions<Permission> | Promise<FindManyOptions<Permission>>> {
     return new Promise((resolve, rejects) => {
       resolve({
+        where: {
+          userId: user.sub
+        },
         relations: [ "project" ]
       });
     })
