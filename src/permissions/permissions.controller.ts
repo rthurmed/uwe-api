@@ -15,7 +15,7 @@ export class PermissionsController extends BaseController<Permission> {
     super(permissionsService)
   }
 
-  override async getSearchOptions (request: Request, user: any): Promise<FindConditions<Permission> | Promise<FindManyOptions<Permission>>> {
+  override async getSearchOptions (request: Request, user: any): Promise<FindConditions<Permission> | FindManyOptions<Permission>> {
     return new Promise((resolve, rejects) => {
       resolve({
         where: {
@@ -26,6 +26,7 @@ export class PermissionsController extends BaseController<Permission> {
     })
   }
 
+  // TODO: Limit this action to project owners
   @Post()
   async create(
     @Body() createPermissionDto: CreatePermissionDto
@@ -33,6 +34,7 @@ export class PermissionsController extends BaseController<Permission> {
     return this.permissionsService.create(createPermissionDto as unknown as Permission);
   }
 
+  // TODO: Also limit this action to project owners
   @Put(':id')
   async update(
     @Param('id') id: number,
@@ -40,4 +42,6 @@ export class PermissionsController extends BaseController<Permission> {
   ): Promise<Permission> {
     return this.permissionsService.update(id, updatePermissionDto as unknown as Permission);
   }
+
+  // TODO: Accept route, accessible to the subject user
 }

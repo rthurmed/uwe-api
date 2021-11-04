@@ -1,13 +1,11 @@
 import { CanActivate, ExecutionContext, Inject, Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
 import { Request } from "express";
-import { Permission } from "src/permissions/entities/permission.entity";
-import { Repository } from "typeorm";
 import { Observable } from "rxjs";
 import { PermissionsService } from "src/permissions/permissions.service";
+import { AccessLevel } from "../../permissions/entities/access-level.enum";
 
 @Injectable()
-export class PermissionGuard implements CanActivate {
+export class OwnerGuard implements CanActivate {
   constructor (
     @Inject(PermissionsService)
     private permissionService: PermissionsService
@@ -19,7 +17,7 @@ export class PermissionGuard implements CanActivate {
         const req: Request = context.switchToHttp().getRequest();
         const userId = req["user"].sub;
         const projectId = req.params.id;
-        const result = await this.permissionService.findAcceptedByUserId(userId, [projectId]);
+        const result = await this.permissionService.findAcceptedByUserId(userId, [projectId], [AccessLevel.OWNER]);
         resolve(result.length > 0);
       } catch (error) {
         reject(error);

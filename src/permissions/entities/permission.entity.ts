@@ -17,10 +17,10 @@ export class Permission extends Base {
   @Column({ type: 'date', name: 'revoked_at', nullable: true })
   revokedAt: Date;
 
-  @Column({ name: 'user_id' })
+  @Column({ name: 'user_id', update: false })
   userId: string;
 
-  @Column({ name: 'project_id' })
+  @Column({ name: 'project_id', update: false })
   projectId: number;
 
   @ManyToOne(() => Project, (project: Project) => project.permissions, { onDelete: 'CASCADE' })

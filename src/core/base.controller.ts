@@ -11,7 +11,7 @@ export class BaseController<T> {
     protected service: BaseService<T>
   ) {}
 
-  async getSearchOptions (request: Request, user: any): Promise<FindConditions<T> | Promise<FindManyOptions<T>>> {
+  async getSearchOptions (request: Request, user: any): Promise<FindConditions<T> | FindManyOptions<T>> {
     return new Promise((resolve, rejects) => {
       resolve({})
     })

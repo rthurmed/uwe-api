@@ -4,6 +4,7 @@ import { BaseService } from '../core/base.service';
 import { DeepPartial, In, Repository } from 'typeorm';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { Permission } from './entities/permission.entity';
+import { AccessLevel } from './entities/access-level.enum';
 
 @Injectable()
 export class PermissionsService extends BaseService<Permission> {
@@ -14,7 +15,7 @@ export class PermissionsService extends BaseService<Permission> {
     super(permissionRepository)
   }
 
-  findAcceptedByUserId (userId: string, projectIds: string[] = []): Promise<Permission[]> {
+  findAcceptedByUserId (userId: string, projectIds: string[] = [], levels: AccessLevel[] = []): Promise<Permission[]> {
     const options = {
       where: {
         userId,
@@ -24,6 +25,9 @@ export class PermissionsService extends BaseService<Permission> {
     }
     if (projectIds.length > 0) {
       options.where['projectId'] = In(projectIds)
+    }
+    if (levels.length > 0) {
+      options.where['level'] = In(levels)
     }
     return this.repository.find(options)
   }

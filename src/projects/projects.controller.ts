@@ -1,13 +1,13 @@
-import { Body, Controller, DefaultValuePipe, Delete, Get, Param, ParseIntPipe, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { AuthenticatedUser, Resource } from 'nest-keycloak-connect';
-import { Pagination } from 'nestjs-typeorm-paginate';
 import { PermissionsService } from 'src/permissions/permissions.service';
 import { FindConditions, FindManyOptions, In } from 'typeorm';
 import { BaseController } from '../core/base.controller';
 import { CreateProjectDTO } from './dto/create-project.dto';
 import { UpdateProjectDTO } from './dto/update-project.dto';
 import { Project } from './entities/project.entity';
+import { OwnerGuard } from './guards/owner.guard';
 import { PermissionGuard } from './guards/permission.guard';
 import { ProjectService } from './projects.service';
 
@@ -21,7 +21,7 @@ export class ProjectController extends BaseController<Project> {
     super(projectService)
   }
 
-  override async getSearchOptions (request: Request, user: any): Promise<FindConditions<Project> | Promise<FindManyOptions<Project>>> {
+  override async getSearchOptions (request: Request, user: any): Promise<FindConditions<Project> | FindManyOptions<Project>> {
     // Project are only shown if the user have the right permissions
     const ids = (await this.permissionService.findAcceptedByUserId(user.sub)).map(e => e.projectId)
     return {
@@ -32,12 +32,13 @@ export class ProjectController extends BaseController<Project> {
 
   @Post()
   async create(
-    @Body() body: CreateProjectDTO
+    @Body() body: CreateProjectDTO,
+    @AuthenticatedUser() user
   ): Promise<Project> {
-    return await this.service.create(body as Project)
+    return await this.projectService.createWithOwner(body as Project, user.sub)
   }
 
-  @UseGuards(PermissionGuard)
+  @UseGuards(OwnerGuard)
   @Put(':id')
   async update(
     @Param('id') id: number,
@@ -61,11 +62,4 @@ export class ProjectController extends BaseController<Project> {
   ) {
     return await this.service.remove(id)
   }
-
-  // @Get()
-  // findMyProjects(
-  //   @AuthenticatedUser() user
-  // ): Promise<Project[]> {
-  //   return this.projectService.findAllByUserId(user.sub)
-  // }
 }
