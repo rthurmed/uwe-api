@@ -5,6 +5,7 @@ export class UpdateDiagramDTO {
   @IsString()
   name: string;
 
+  // FIXME: Allow only when creating, using update: false
   @IsEnum(DiagramType)
   type: DiagramType;
 }

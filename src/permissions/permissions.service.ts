@@ -14,7 +14,7 @@ export class PermissionsService extends BaseService<Permission> {
     super(permissionRepository)
   }
 
-  findAcceptedByUserId (userId: string, projectIds: string[] = [], levels: AccessLevel[] = []): Promise<Permission[]> {
+  findAcceptedByUserId (userId: string, projectIds: string[] = [], levels: AccessLevel[] = [], select: (keyof Permission)[] = []): Promise<Permission[]> {
     const options = {
       where: {
         userId,
@@ -27,6 +27,9 @@ export class PermissionsService extends BaseService<Permission> {
     }
     if (levels.length > 0) {
       options.where['level'] = In(levels)
+    }
+    if (select.length > 0) {
+      options['select'] = select
     }
     return this.repository.find(options)
   }

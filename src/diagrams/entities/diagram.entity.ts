@@ -17,4 +17,6 @@ export class Diagram extends Base {
   @ManyToOne(() => Project, (project: Project) => project.diagrams, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'project_id' })
   project: Project;
+
+  // TODO: Entities list
 }
