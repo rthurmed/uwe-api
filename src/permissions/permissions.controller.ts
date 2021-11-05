@@ -1,7 +1,8 @@
 import { Controller, Post, Body, Param, Put, UseGuards } from '@nestjs/common';
 import { PermissionsService } from './permissions.service';
-import { CreatePermissionDto } from './dto/create-permission.dto';
-import { UpdatePermissionDto } from './dto/update-permission.dto';
+import { CreatePermissionDTO } from './dto/create-permission.dto';
+import { UpdatePermissionDTO } from './dto/update-permission.dto';
+import { AcceptPermissionDTO } from './dto/accept-permission.dto';
 import { BaseController } from '../core/base.controller';
 import { Permission } from './entities/permission.entity';
 import { Resource } from 'nest-keycloak-connect';
@@ -9,6 +10,7 @@ import { FindConditions, FindManyOptions } from 'typeorm';
 import { Request } from 'express';
 import { ProjectOwnerCreateGuard } from './guards/project-owner-create.guard';
 import { ProjectOwnerUpdateGuard } from './guards/project-owner-update.guard';
+import { OnlySubjectUserGuard } from './guards/only-subject-user.guard';
 
 @Controller('permissions')
 @Resource(Permission.name)
@@ -31,7 +33,7 @@ export class PermissionsController extends BaseController<Permission> {
   @UseGuards(ProjectOwnerCreateGuard)
   @Post()
   async create(
-    @Body() createPermissionDto: CreatePermissionDto
+    @Body() createPermissionDto: CreatePermissionDTO
   ): Promise<Permission> {
     return this.permissionsService.create(createPermissionDto as unknown as Permission);
   }
@@ -40,10 +42,17 @@ export class PermissionsController extends BaseController<Permission> {
   @Put(':id')
   async update(
     @Param('id') id: number,
-    @Body() updatePermissionDto: UpdatePermissionDto
+    @Body() updatePermissionDto: UpdatePermissionDTO
   ): Promise<Permission> {
     return this.permissionsService.update(id, updatePermissionDto as unknown as Permission);
   }
 
-  // TODO: Accept route, accessible to the subject user
+  @UseGuards(OnlySubjectUserGuard)
+  @Post('accept/:id')
+  async accept(
+    @Param('id') id: number,
+    @Body() acceptPermissionDTO: AcceptPermissionDTO
+  ): Promise<Permission> {
+    return this.permissionsService.update(id, acceptPermissionDTO as unknown as Permission)
+  }
 }

@@ -1,9 +1,7 @@
-import { IsEnum, IsInt, IsObject, IsString } from "class-validator";
-import { Project } from "../../projects/entities/project.entity";
+import { IsEnum, IsInt, IsString } from "class-validator";
 import { AccessLevel } from "../entities/access-level.enum";
-import { Permission } from "../entities/permission.entity";
 
-export class CreatePermissionDto {
+export class CreatePermissionDTO {
   @IsEnum(AccessLevel)
   level: number;
 

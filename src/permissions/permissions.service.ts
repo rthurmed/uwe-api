@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from '../core/base.service';
-import { DeepPartial, In, Repository } from 'typeorm';
-import { CreatePermissionDto } from './dto/create-permission.dto';
+import { In, Repository } from 'typeorm';
 import { Permission } from './entities/permission.entity';
 import { AccessLevel } from './entities/access-level.enum';
 
