@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Param, Put } from '@nestjs/common';
+import { Controller, Post, Body, Param, Put, UseGuards } from '@nestjs/common';
 import { PermissionsService } from './permissions.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
@@ -7,6 +7,8 @@ import { Permission } from './entities/permission.entity';
 import { Resource } from 'nest-keycloak-connect';
 import { FindConditions, FindManyOptions } from 'typeorm';
 import { Request } from 'express';
+import { ProjectOwnerCreateGuard } from './guards/project-owner-create.guard';
+import { ProjectOwnerUpdateGuard } from './guards/project-owner-update.guard';
 
 @Controller('permissions')
 @Resource(Permission.name)
@@ -26,7 +28,7 @@ export class PermissionsController extends BaseController<Permission> {
     })
   }
 
-  // TODO: Limit this action to project owners
+  @UseGuards(ProjectOwnerCreateGuard)
   @Post()
   async create(
     @Body() createPermissionDto: CreatePermissionDto
@@ -34,7 +36,7 @@ export class PermissionsController extends BaseController<Permission> {
     return this.permissionsService.create(createPermissionDto as unknown as Permission);
   }
 
-  // TODO: Also limit this action to project owners
+  @UseGuards(ProjectOwnerUpdateGuard)
   @Put(':id')
   async update(
     @Param('id') id: number,

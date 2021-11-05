@@ -1,10 +1,12 @@
 import { CanActivate, ExecutionContext, Inject, Injectable } from "@nestjs/common";
 import { Request } from "express";
 import { Observable } from "rxjs";
-import { PermissionsService } from "src/permissions/permissions.service";
+import { CreatePermissionDto } from "../dto/create-permission.dto";
+import { AccessLevel } from "../entities/access-level.enum";
+import { PermissionsService } from "../permissions.service";
 
 @Injectable()
-export class PermissionGuard implements CanActivate {
+export class ProjectOwnerCreateGuard implements CanActivate {
   constructor (
     @Inject(PermissionsService)
     private permissionService: PermissionsService
@@ -15,12 +17,18 @@ export class PermissionGuard implements CanActivate {
       try {
         const req: Request = context.switchToHttp().getRequest();
         const userId = req["user"].sub;
-        const projectId = req.params.id;
-        const result = await this.permissionService.findAcceptedByUserId(userId, [projectId]);
+        const dto: CreatePermissionDto = req.body;
+        const projectId = dto.projectId
+        const result = await this.permissionService
+          .findAcceptedByUserId(userId, [
+            projectId.toString()
+          ], [
+            AccessLevel.OWNER
+          ]);
         resolve(result.length > 0);
       } catch (error) {
         reject(error);
       }
     })
   }
-}
+} 
