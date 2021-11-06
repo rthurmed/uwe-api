@@ -26,7 +26,7 @@ export class ProjectController extends BaseController<Project> {
     const ids = (await this.permissionService.findAcceptedByUserId(user.sub)).map(e => e.projectId)
     return {
       where: { id: In(ids) },
-      relations: [ "permissions" ]
+      relations: [ "permissions", "diagrams" ]
     }
   }
 
