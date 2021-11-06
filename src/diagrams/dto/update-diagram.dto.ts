@@ -1,11 +1,12 @@
-import { IsEnum, IsInt, IsString } from "class-validator";
+import { IsEnum, IsIn, IsInt, IsOptional, IsString } from "class-validator";
 import { DiagramType } from "../entities/diagram-type.enum";
 
 export class UpdateDiagramDTO {
   @IsString()
   name: string;
 
-  // FIXME: Allow only when creating, using update: false
+  @IsIn([])
+  @IsOptional()
   @IsEnum(DiagramType)
   type: DiagramType;
 }

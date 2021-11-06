@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Param, Put, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Param, Put, UseGuards, Get } from '@nestjs/common';
 import { Request } from 'express';
 import { FindConditions, FindManyOptions, In } from 'typeorm';
 import { BaseController } from '../core/base.controller';
@@ -15,7 +15,7 @@ import { DiagramCreateGuard } from './guards/diagram-create.guard';
  * 
  * Handles all requests to manage diagrams
  * 
- * Diagrams can be create, updated and deleted by users with editor or owner permission level
+ * Diagrams can be create, updated and deleted by users with owner permission level
  * 
  * The diagram list only returns diagrams in which the user has permission to interact with (read permission minimum)
  * 
@@ -47,12 +47,10 @@ export class DiagramsController extends BaseController<Diagram> {
       where: {
         projectId: In(ids)
       },
-      relations: [ "projects" ]
+      relations: [ "project" ]
     }
   }
 
-  // FIXME: Enable read permission for GET route
-  
   @UseGuards(DiagramCreateGuard)
   @Post()
   async create(

@@ -8,7 +8,7 @@ export class Diagram extends Base {
   @Column()
   name: string;
 
-  @Column({ name: 'type', enum: DiagramType, default: DiagramType.USECASE })
+  @Column({ name: 'type', enum: DiagramType, default: DiagramType.USECASE, update: false })
   type: DiagramType;
 
   @Column({ name: 'project_id', update: false })

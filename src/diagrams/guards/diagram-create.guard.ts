@@ -23,8 +23,7 @@ export class DiagramCreateGuard implements CanActivate {
         const permissions = await this.permissionService.findAcceptedByUserId(userId, [
           projectId.toString()
         ], [
-          AccessLevel.OWNER,
-          AccessLevel.WRITE
+          AccessLevel.OWNER
         ]);
         
         resolve(permissions.length > 0);
