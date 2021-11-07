@@ -18,7 +18,7 @@ export class ProjectController extends BaseController<Project> {
     private readonly projectService: ProjectService,
     private readonly permissionService: PermissionsService
   ) {
-    super(projectService)
+    super(projectService, [ "permissions", "diagrams" ])
   }
 
   override async getSearchOptions (request: Request, user: any): Promise<FindConditions<Project> | FindManyOptions<Project>> {
@@ -52,7 +52,9 @@ export class ProjectController extends BaseController<Project> {
   override async findOne(
     @Param('id') id: number
   ): Promise<Project> {
-    return await this.service.findOne(id)
+    return await this.service.findOne(id, {
+      relations: this.defaultRelations
+    })
   }
 
   @UseGuards(PermissionGuard)

@@ -4,15 +4,15 @@ import { Pagination } from "nestjs-typeorm-paginate";
 import { Request } from "express";
 import { FindConditions, FindManyOptions } from "typeorm";
 import { AuthenticatedUser } from "nest-keycloak-connect";
-import { rejects } from "assert";
 
 export class BaseController<T> {
   constructor (
-    protected service: BaseService<T>
+    protected service: BaseService<T>,
+    protected defaultRelations: string[] = []
   ) {}
 
   async getSearchOptions (request: Request, user: any): Promise<FindConditions<T> | FindManyOptions<T>> {
-    return new Promise((resolve, rejects) => {
+    return new Promise((resolve, reject) => {
       resolve({})
     })
   }
@@ -38,7 +38,9 @@ export class BaseController<T> {
   async findOne(
     @Param('id') id: number
   ): Promise<T> {
-    return await this.service.findOne(id)
+    return await this.service.findOne(id, {
+      relations: this.defaultRelations
+    })
   }
 
   // POST e PUT require DTOs and must be made in each controller

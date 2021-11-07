@@ -1,5 +1,5 @@
 import { IPaginationOptions, paginate, Pagination } from "nestjs-typeorm-paginate";
-import { DeepPartial, FindConditions, FindManyOptions, Repository } from "typeorm";
+import { DeepPartial, FindConditions, FindManyOptions, FindOneOptions, Repository } from "typeorm";
 
 export class BaseService<T> {
   protected repository: Repository<T>
@@ -20,8 +20,8 @@ export class BaseService<T> {
     return this.repository.find();
   }
   
-  findOne(id: number): Promise<T> {
-    return this.repository.findOne(id)
+  findOne(id: number, options?: FindOneOptions<T>): Promise<T> {
+    return this.repository.findOne(id, options)
   }
 
   create(entity: DeepPartial<T>): Promise<T> {
