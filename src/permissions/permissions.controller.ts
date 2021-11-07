@@ -16,43 +16,54 @@ import { OnlySubjectUserGuard } from './guards/only-subject-user.guard';
 @Resource(Permission.name)
 export class PermissionsController extends BaseController<Permission> {
   constructor(private readonly permissionsService: PermissionsService) {
-    super(permissionsService)
+    super(permissionsService);
   }
 
-  override async getSearchOptions (request: Request, user: any): Promise<FindConditions<Permission> | FindManyOptions<Permission>> {
-    return new Promise((resolve, rejects) => {
+  override async getSearchOptions(
+    request: Request,
+    user: any,
+  ): Promise<FindConditions<Permission> | FindManyOptions<Permission>> {
+    return new Promise((resolve) => {
       resolve({
         where: {
-          userId: user.sub
+          userId: user.sub,
         },
-        relations: [ "project" ]
+        relations: ['project'],
       });
-    })
+    });
   }
 
   @UseGuards(ProjectOwnerCreateGuard)
   @Post()
   async create(
-    @Body() createPermissionDto: CreatePermissionDTO
+    @Body() createPermissionDto: CreatePermissionDTO,
   ): Promise<Permission> {
-    return this.permissionsService.create(createPermissionDto as unknown as Permission);
+    return this.permissionsService.create(
+      createPermissionDto as unknown as Permission,
+    );
   }
 
   @UseGuards(ProjectOwnerUpdateGuard)
   @Put(':id')
   async update(
     @Param('id') id: number,
-    @Body() updatePermissionDto: UpdatePermissionDTO
+    @Body() updatePermissionDto: UpdatePermissionDTO,
   ): Promise<Permission> {
-    return this.permissionsService.update(id, updatePermissionDto as unknown as Permission);
+    return this.permissionsService.update(
+      id,
+      updatePermissionDto as unknown as Permission,
+    );
   }
 
   @UseGuards(OnlySubjectUserGuard)
   @Post('accept/:id')
   async accept(
     @Param('id') id: number,
-    @Body() acceptPermissionDTO: AcceptPermissionDTO
+    @Body() acceptPermissionDTO: AcceptPermissionDTO,
   ): Promise<Permission> {
-    return this.permissionsService.update(id, acceptPermissionDTO as unknown as Permission)
+    return this.permissionsService.update(
+      id,
+      acceptPermissionDTO as unknown as Permission,
+    );
   }
 }

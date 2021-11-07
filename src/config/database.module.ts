@@ -15,7 +15,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       // migrations: ['resources/migrations/*.js'],
       // migrationsRun: true,
       synchronize: true,
-    })
-  ]
+    }),
+  ],
 })
 export class DatabaseModule {}

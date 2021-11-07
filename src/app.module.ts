@@ -6,6 +6,12 @@ import { PermissionsModule } from './permissions/permissions.module';
 import { DiagramsModule } from './diagrams/diagrams.module';
 
 @Module({
-  imports: [KeycloakModule, DatabaseModule, ProjectModule, PermissionsModule, DiagramsModule],
+  imports: [
+    KeycloakModule,
+    DatabaseModule,
+    ProjectModule,
+    PermissionsModule,
+    DiagramsModule,
+  ],
 })
 export class AppModule {}

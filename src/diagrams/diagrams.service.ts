@@ -6,10 +6,10 @@ import { Diagram } from './entities/diagram.entity';
 
 @Injectable()
 export class DiagramsService extends BaseService<Diagram> {
-  constructor (
+  constructor(
     @InjectRepository(Diagram)
-    private diagramRepository: Repository<Diagram>
+    private diagramRepository: Repository<Diagram>,
   ) {
-    super(diagramRepository)
+    super(diagramRepository);
   }
 }

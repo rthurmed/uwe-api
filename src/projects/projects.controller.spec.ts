@@ -10,14 +10,13 @@ describe('ProjectController', () => {
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
-      imports: [
-        TestDatabaseModule,
-        TypeOrmModule.forFeature([Project])
-      ],
+      imports: [TestDatabaseModule, TypeOrmModule.forFeature([Project])],
       controllers: [ProjectController],
       providers: [ProjectService],
     }).compile();
 
+    // TODO
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     projectController = app.get<ProjectController>(ProjectController);
   });
 

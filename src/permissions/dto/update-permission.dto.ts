@@ -1,5 +1,5 @@
-import { IsEnum } from "class-validator";
-import { AccessLevel } from "../entities/access-level.enum";
+import { IsEnum } from 'class-validator';
+import { AccessLevel } from '../entities/access-level.enum';
 
 export class UpdatePermissionDTO {
   @IsEnum(AccessLevel)

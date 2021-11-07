@@ -7,30 +7,35 @@ import { AccessLevel } from './entities/access-level.enum';
 
 @Injectable()
 export class PermissionsService extends BaseService<Permission> {
-  constructor (
+  constructor(
     @InjectRepository(Permission)
-    private permissionRepository: Repository<Permission>
+    private permissionRepository: Repository<Permission>,
   ) {
-    super(permissionRepository)
+    super(permissionRepository);
   }
 
-  findAcceptedByUserId (userId: string, projectIds: string[] = [], levels: AccessLevel[] = [], select: (keyof Permission)[] = []): Promise<Permission[]> {
+  findAcceptedByUserId(
+    userId: string,
+    projectIds: string[] = [],
+    levels: AccessLevel[] = [],
+    select: (keyof Permission)[] = [],
+  ): Promise<Permission[]> {
     const options = {
       where: {
         userId,
         accepted: true,
         revoked: false,
-      }
-    }
+      },
+    };
     if (projectIds.length > 0) {
-      options.where['projectId'] = In(projectIds)
+      options.where['projectId'] = In(projectIds);
     }
     if (levels.length > 0) {
-      options.where['level'] = In(levels)
+      options.where['level'] = In(levels);
     }
     if (select.length > 0) {
-      options['select'] = select
+      options['select'] = select;
     }
-    return this.repository.find(options)
+    return this.repository.find(options);
   }
 }

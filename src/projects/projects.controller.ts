@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { Request } from 'express';
 import { AuthenticatedUser, Resource } from 'nest-keycloak-connect';
 import { PermissionsService } from 'src/permissions/permissions.service';
@@ -16,52 +25,53 @@ import { ProjectService } from './projects.service';
 export class ProjectController extends BaseController<Project> {
   constructor(
     private readonly projectService: ProjectService,
-    private readonly permissionService: PermissionsService
+    private readonly permissionService: PermissionsService,
   ) {
-    super(projectService, [ "permissions", "diagrams" ])
+    super(projectService, ['permissions', 'diagrams']);
   }
 
-  override async getSearchOptions (request: Request, user: any): Promise<FindConditions<Project> | FindManyOptions<Project>> {
+  override async getSearchOptions(
+    request: Request,
+    user: any,
+  ): Promise<FindConditions<Project> | FindManyOptions<Project>> {
     // Project are only shown if the user have the right permissions
-    const ids = (await this.permissionService.findAcceptedByUserId(user.sub)).map(e => e.projectId)
+    const ids = (
+      await this.permissionService.findAcceptedByUserId(user.sub)
+    ).map((e) => e.projectId);
     return {
       where: { id: In(ids) },
-      relations: [ "permissions", "diagrams" ]
-    }
+      relations: ['permissions', 'diagrams'],
+    };
   }
 
   @Post()
   async create(
     @Body() body: CreateProjectDTO,
-    @AuthenticatedUser() user
+    @AuthenticatedUser() user,
   ): Promise<Project> {
-    return await this.projectService.createWithOwner(body as Project, user.sub)
+    return await this.projectService.createWithOwner(body as Project, user.sub);
   }
 
   @UseGuards(OwnerGuard)
   @Put(':id')
   async update(
     @Param('id') id: number,
-    @Body() body: UpdateProjectDTO
+    @Body() body: UpdateProjectDTO,
   ): Promise<Project> {
-    return await this.service.update(id, body as Project)
+    return await this.service.update(id, body as Project);
   }
 
   @UseGuards(PermissionGuard)
   @Get(':id')
-  override async findOne(
-    @Param('id') id: number
-  ): Promise<Project> {
+  override async findOne(@Param('id') id: number): Promise<Project> {
     return await this.service.findOne(id, {
-      relations: this.defaultRelations
-    })
+      relations: this.defaultRelations,
+    });
   }
 
   @UseGuards(PermissionGuard)
   @Delete(':id')
-  override async remove(
-    @Param('id') id: number
-  ) {
-    return await this.service.remove(id)
+  override async remove(@Param('id') id: number) {
+    return await this.service.remove(id);
   }
 }

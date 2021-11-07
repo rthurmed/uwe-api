@@ -8,13 +8,13 @@ import { AccessLevel } from 'src/permissions/entities/access-level.enum';
 
 @Injectable()
 export class ProjectService extends BaseService<Project> {
-  constructor (
+  constructor(
     @InjectRepository(Project)
     private projectRepository: Repository<Project>,
     @InjectRepository(Permission)
-    private permissionRepository: Repository<Permission>
+    private permissionRepository: Repository<Permission>,
   ) {
-    super(projectRepository)
+    super(projectRepository);
   }
 
   createOwner(userId: string, projectId: number): Promise<Permission> {
@@ -22,19 +22,22 @@ export class ProjectService extends BaseService<Project> {
       projectId: projectId,
       userId: userId,
       accepted: true,
-      level: AccessLevel.OWNER
-    })
+      level: AccessLevel.OWNER,
+    });
   }
 
-  createWithOwner(entity: DeepPartial<Project>, userId: string): Promise<Project> {
+  createWithOwner(
+    entity: DeepPartial<Project>,
+    userId: string,
+  ): Promise<Project> {
     return new Promise(async (resolve, rejects) => {
       try {
-        const result = await this.repository.save(entity)
-        await this.createOwner(userId, result.id)
-        resolve(result)
+        const result = await this.repository.save(entity);
+        await this.createOwner(userId, result.id);
+        resolve(result);
       } catch (error) {
-        rejects(error)
+        rejects(error);
       }
-    })
+    });
   }
 }

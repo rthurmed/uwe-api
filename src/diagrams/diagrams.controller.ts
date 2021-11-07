@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Param, Put, UseGuards, Get } from '@nestjs/common';
+import { Controller, Post, Body, Param, Put, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { FindConditions, FindManyOptions, In } from 'typeorm';
 import { BaseController } from '../core/base.controller';
@@ -12,13 +12,13 @@ import { DiagramCreateGuard } from './guards/diagram-create.guard';
 
 /**
  * Diagram controller
- * 
+ *
  * Handles all requests to manage diagrams
- * 
+ *
  * Diagrams can be create, updated and deleted by users with owner permission level
- * 
+ *
  * The diagram list only returns diagrams in which the user has permission to interact with (read permission minimum)
- * 
+ *
  * Diagram update can only change its name
  */
 @Controller('diagrams')
@@ -26,44 +26,46 @@ import { DiagramCreateGuard } from './guards/diagram-create.guard';
 export class DiagramsController extends BaseController<Diagram> {
   constructor(
     private readonly diagramsService: DiagramsService,
-    private readonly permissionsService: PermissionsService
+    private readonly permissionsService: PermissionsService,
   ) {
-    super(diagramsService)
+    super(diagramsService);
   }
 
-  override async getSearchOptions (request: Request, user: any): Promise<FindConditions<Diagram> | FindManyOptions<Diagram>> {
+  override async getSearchOptions(
+    request: Request,
+    user: any,
+  ): Promise<FindConditions<Diagram> | FindManyOptions<Diagram>> {
     const ids = (
-        await this.permissionsService
-          .findAcceptedByUserId(
-            user.sub,
-            [],
-            [],
-            ['projectId']
-          )
+      await this.permissionsService.findAcceptedByUserId(
+        user.sub,
+        [],
+        [],
+        ['projectId'],
       )
-        .map(e => e.projectId)
+    ).map((e) => e.projectId);
 
     return {
       where: {
-        projectId: In(ids)
+        projectId: In(ids),
       },
-      relations: [ "project" ]
-    }
+      relations: ['project'],
+    };
   }
 
   @UseGuards(DiagramCreateGuard)
   @Post()
-  async create(
-    @Body() createDiagramDto: CreateDiagramDTO
-  ): Promise<Diagram> {
+  async create(@Body() createDiagramDto: CreateDiagramDTO): Promise<Diagram> {
     return this.diagramsService.create(createDiagramDto as unknown as Diagram);
   }
 
   @Put(':id')
   async update(
     @Param('id') id: number,
-    @Body() updateDiagramDto: UpdateDiagramDTO
+    @Body() updateDiagramDto: UpdateDiagramDTO,
   ): Promise<Diagram> {
-    return this.diagramsService.update(id, updateDiagramDto as unknown as Diagram);
+    return this.diagramsService.update(
+      id,
+      updateDiagramDto as unknown as Diagram,
+    );
   }
 }

@@ -1,5 +1,5 @@
-import { IsEnum, IsIn, IsInt, IsOptional, IsString } from "class-validator";
-import { DiagramType } from "../entities/diagram-type.enum";
+import { IsEnum, IsIn, IsOptional, IsString } from 'class-validator';
+import { DiagramType } from '../entities/diagram-type.enum';
 
 export class UpdateDiagramDTO {
   @IsString()
