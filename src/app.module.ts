@@ -4,6 +4,7 @@ import { KeycloakModule } from './config/keycloak.module';
 import { ProjectModule } from './projects/projects.module';
 import { PermissionsModule } from './permissions/permissions.module';
 import { DiagramsModule } from './diagrams/diagrams.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { DiagramsModule } from './diagrams/diagrams.module';
     ProjectModule,
     PermissionsModule,
     DiagramsModule,
+    UsersModule,
   ],
 })
 export class AppModule {}
