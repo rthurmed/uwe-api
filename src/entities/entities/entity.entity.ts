@@ -22,19 +22,19 @@ export class Entity extends Base {
   @Column()
   title: string;
 
-  @Column()
+  @Column({ default: 0 })
   x: number;
 
-  @Column()
+  @Column({ default: 0 })
   y: number;
 
-  @Column()
+  @Column({ default: 0 })
   width: number;
 
-  @Column()
+  @Column({ default: 0 })
   height: number;
 
-  @Column()
+  @Column({ default: false })
   abstract: boolean;
 
   @Column({ name: 'diagram_id', update: false })
