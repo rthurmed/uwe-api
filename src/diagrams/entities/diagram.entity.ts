@@ -1,9 +1,16 @@
 import { Project } from '../../projects/entities/project.entity';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import {
+  Column,
+  Entity as TypeEntity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { Base } from '../../core/base.entity';
 import { DiagramType } from './diagram-type.enum';
+import { Entity } from '../../entities/entities/entity.entity';
 
-@Entity({ name: 'diagrams' })
+@TypeEntity({ name: 'diagrams' })
 export class Diagram extends Base {
   @Column()
   name: string;
@@ -25,5 +32,6 @@ export class Diagram extends Base {
   @JoinColumn({ name: 'project_id' })
   project: Project;
 
-  // TODO: Entities list
+  @OneToMany(() => Entity, (entity: Entity) => entity.diagram)
+  entities: Entity[];
 }
