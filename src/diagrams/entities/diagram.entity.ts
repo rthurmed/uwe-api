@@ -9,6 +9,7 @@ import {
 import { Base } from '../../core/base.entity';
 import { DiagramType } from './diagram-type.enum';
 import { Entity } from '../../entities/entities/entity.entity';
+import { Participant } from '../../participants/entities/participant.entity';
 
 @TypeEntity({ name: 'diagrams' })
 export class Diagram extends Base {
@@ -34,4 +35,10 @@ export class Diagram extends Base {
 
   @OneToMany(() => Entity, (entity: Entity) => entity.diagram)
   entities: Entity[];
+
+  @OneToMany(
+    () => Participant,
+    (participant: Participant) => participant.diagram,
+  )
+  participants: Participant[];
 }

@@ -48,7 +48,7 @@ export class DiagramsController extends BaseController<Diagram> {
       where: {
         projectId: In(ids),
       },
-      relations: ['project'],
+      relations: ['project', 'entities', 'participants'],
     };
   }
 

@@ -6,6 +6,7 @@ import { PermissionsModule } from './permissions/permissions.module';
 import { DiagramsModule } from './diagrams/diagrams.module';
 import { UsersModule } from './users/users.module';
 import { EntitiesModule } from './entities/entities.module';
+import { ParticipantsModule } from './participants/participants.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { EntitiesModule } from './entities/entities.module';
     DiagramsModule,
     UsersModule,
     EntitiesModule,
+    ParticipantsModule,
   ],
 })
 export class AppModule {}

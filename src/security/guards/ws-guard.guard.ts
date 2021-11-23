@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { Socket } from 'socket.io';
-import { parseToken } from '../utils';
+import { parseToken } from '../../entities/utils';
 
 @Injectable()
 export class WsGuard implements CanActivate {
