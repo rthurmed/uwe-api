@@ -1,4 +1,4 @@
-import { Entity as TypeEntity, Column, JoinColumn, OneToOne } from 'typeorm';
+import { Entity as TypeEntity, Column, JoinColumn, OneToOne, ManyToOne } from 'typeorm';
 import { Base } from '../../core/base.entity';
 import { Diagram } from '../../diagrams/entities/diagram.entity';
 import { Entity } from '../../entities/entities/entity.entity';
@@ -17,17 +17,17 @@ export class Participant extends Base {
   @Column({ name: 'diagram_id', update: false })
   diagramId: number;
 
-  @Column({ name: 'grabbed_id', update: false })
+  @Column({ name: 'grabbed_id', update: false, nullable: true })
   grabbedId: number;
 
-  @OneToOne(() => Diagram, {
+  @ManyToOne(() => Diagram, (diagram: Diagram) => diagram.participants, {
     nullable: false,
   })
   @JoinColumn({ name: 'diagram_id' })
   diagram: Diagram;
 
   @OneToOne(() => Entity, {
-    nullable: false,
+    nullable: true,
   })
   @JoinColumn({ name: 'grabbed_id' })
   grabbed: Entity;

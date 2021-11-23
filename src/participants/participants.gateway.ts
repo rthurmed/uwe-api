@@ -9,6 +9,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { DiagramsService } from 'src/diagrams/diagrams.service';
 import { WsGuard } from 'src/security/guards/ws-guard.guard';
+import { Participant } from './entities/participant.entity';
 import { ParticipantsService } from './participants.service';
 
 @UseGuards(WsGuard)
@@ -33,11 +34,6 @@ export class ParticipantsGateway {
   // grab
   // drop
 
-  /**
-   * Join the editor for a diagram
-   *
-   * @param id diagram id
-   */
   @SubscribeMessage('join')
   async join(@MessageBody() id: number, @ConnectedSocket() client: Socket) {
     // Verify if can join the diagram room
@@ -47,19 +43,25 @@ export class ParticipantsGateway {
       return;
     }
 
+    const participant = new Participant();
+    participant.diagramId = id;
+    participant.userId = userId;
+
+    const newParticipant = await this.participantsService.create(participant);
+
+    client.data.participant = newParticipant;
+
     // Join the room (https://socket.io/docs/v4/rooms/)
     client.join(String(id));
-    this.server.to(String(id)).emit('join', userId);
+    this.server.to(String(id)).emit('join', newParticipant);
   }
 
   @SubscribeMessage('leave')
-  leave(@ConnectedSocket() client: Socket) {
-    //
+  async leave(@ConnectedSocket() client: Socket) {
+    await this.participantsService.remove(client.data.participant.id);
+    client.data = null;
   }
 
-  /**
-   * Change mouse location of the current user
-   */
   @SubscribeMessage('move')
   move() {
     //

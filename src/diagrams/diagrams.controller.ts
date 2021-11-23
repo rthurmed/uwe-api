@@ -28,7 +28,7 @@ export class DiagramsController extends BaseController<Diagram> {
     private readonly diagramsService: DiagramsService,
     private readonly permissionsService: PermissionsService,
   ) {
-    super(diagramsService);
+    super(diagramsService, ['project', 'entities', 'participants']);
   }
 
   override async getSearchOptions(
@@ -48,7 +48,7 @@ export class DiagramsController extends BaseController<Diagram> {
       where: {
         projectId: In(ids),
       },
-      relations: ['project', 'entities', 'participants'],
+      relations: ['project'],
     };
   }
 
