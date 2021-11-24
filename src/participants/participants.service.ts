@@ -12,4 +12,11 @@ export class ParticipantsService extends BaseService<Participant> {
   ) {
     super(participantRepository);
   }
+
+  async move(id: number, x: number, y: number): Promise<Participant> {
+    const participant = await this.repository.findOneOrFail(id);
+    participant.x = x;
+    participant.y = y;
+    return await this.repository.save(participant);
+  }
 }

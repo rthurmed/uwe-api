@@ -1,4 +1,10 @@
-import { Entity as TypeEntity, Column, JoinColumn, OneToOne, ManyToOne } from 'typeorm';
+import {
+  Entity as TypeEntity,
+  Column,
+  JoinColumn,
+  OneToOne,
+  ManyToOne,
+} from 'typeorm';
 import { Base } from '../../core/base.entity';
 import { Diagram } from '../../diagrams/entities/diagram.entity';
 import { Entity } from '../../entities/entities/entity.entity';

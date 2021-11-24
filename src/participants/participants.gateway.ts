@@ -7,8 +7,10 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { DiagramsService } from 'src/diagrams/diagrams.service';
-import { WsGuard } from 'src/security/guards/ws-guard.guard';
+import { DiagramsService } from '../diagrams/diagrams.service';
+import { WsGuard } from '../security/guards/ws-guard.guard';
+import { WsParticipantGuard } from '../security/guards/ws-participant.guard';
+import { MoveDTO } from './dto/move.dto';
 import { Participant } from './entities/participant.entity';
 import { ParticipantsService } from './participants.service';
 
@@ -58,13 +60,27 @@ export class ParticipantsGateway {
 
   @SubscribeMessage('leave')
   async leave(@ConnectedSocket() client: Socket) {
-    await this.participantsService.remove(client.data.participant.id);
+    const participant: Participant = client.data.participant;
+    this.server.to(String(participant.diagramId)).emit('leave', participant.id);
+    await this.participantsService.remove(participant.id);
     client.data = null;
   }
 
   @SubscribeMessage('move')
-  move() {
-    //
+  @UseGuards(WsParticipantGuard)
+  async move(@MessageBody() dto: MoveDTO, @ConnectedSocket() client: Socket) {
+    const caller: Participant = client.data.participant;
+    const participant = await this.participantsService.move(
+      caller.id,
+      dto.x,
+      dto.y,
+    );
+
+    this.server.to(String(participant.diagramId)).emit('move', {
+      participantId: participant.id,
+      x: participant.x,
+      y: participant.y,
+    });
   }
 
   @SubscribeMessage('grab')
