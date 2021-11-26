@@ -19,7 +19,7 @@ export class Entity extends Base {
   })
   type: EntityType;
 
-  @Column()
+  @Column({ default: '' })
   title: string;
 
   @Column({ default: 0 })
@@ -40,10 +40,10 @@ export class Entity extends Base {
   @Column({ name: 'diagram_id', update: false })
   diagramId: number;
 
-  @Column({ name: 'origin_id', update: false })
+  @Column({ name: 'origin_id', update: false, nullable: true })
   originId: number;
 
-  @Column({ name: 'target_id', update: false })
+  @Column({ name: 'target_id', update: false, nullable: true })
   targetId: number;
 
   @ManyToOne(() => Diagram, (diagram: Diagram) => diagram.entities, {

@@ -13,6 +13,8 @@ import { Server, Socket } from 'socket.io';
 import { UseGuards } from '@nestjs/common';
 import { WsGuard } from '../security/guards/ws-guard.guard';
 import { DiagramsService } from 'src/diagrams/diagrams.service';
+import { Entity } from './entities/entity.entity';
+import { Participant } from '../participants/entities/participant.entity';
 
 @UseGuards(WsGuard)
 @WebSocketGateway(Number(process.env.WS_PORT), {
@@ -31,8 +33,16 @@ export class EntitiesGateway {
   server: Server;
 
   @SubscribeMessage('create')
-  create(@MessageBody() createEntityDto: CreateEntityDto) {
-    //
+  async create(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() createEntityDto: CreateEntityDto,
+  ) {
+    // TODO: Grant the user can access the diagram
+    const caller: Participant = client.data.participant;
+    const entity = await this.entitiesService.create(
+      createEntityDto as unknown as Entity,
+    );
+    this.server.to(String(caller.diagramId)).emit('create', entity);
   }
 
   @SubscribeMessage('patch')
