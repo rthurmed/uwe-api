@@ -58,6 +58,7 @@ export class ParticipantsGateway {
     this.server.to(String(id)).emit('join', newParticipant);
   }
 
+  @UseGuards(WsParticipantGuard)
   @SubscribeMessage('leave')
   async leave(@ConnectedSocket() client: Socket) {
     const participant: Participant = client.data.participant;
@@ -66,8 +67,8 @@ export class ParticipantsGateway {
     client.data = null;
   }
 
-  @SubscribeMessage('move')
   @UseGuards(WsParticipantGuard)
+  @SubscribeMessage('move')
   async move(@MessageBody() dto: MoveDTO, @ConnectedSocket() client: Socket) {
     const caller: Participant = client.data.participant;
     const participant = await this.participantsService.move(
@@ -83,13 +84,27 @@ export class ParticipantsGateway {
     });
   }
 
+  @UseGuards(WsParticipantGuard)
   @SubscribeMessage('grab')
-  grab(@MessageBody() id: number) {
-    //
+  async grab(@MessageBody() id: number, @ConnectedSocket() client: Socket) {
+    const caller: Participant = client.data.participant;
+    const participant = await this.participantsService.grab(caller.id, id);
+    if (participant.grabbedId !== id) {
+      return;
+    }
+    this.server.to(String(participant.diagramId)).emit('grab', {
+      participantId: participant.id,
+      entityId: participant.grabbedId,
+    });
   }
 
+  @UseGuards(WsParticipantGuard)
   @SubscribeMessage('drop')
-  drop(@MessageBody() id: number) {
-    //
+  async drop(@ConnectedSocket() client: Socket) {
+    const caller: Participant = client.data.participant;
+    const participant = await this.participantsService.drop(caller.id);
+    this.server.to(String(participant.diagramId)).emit('drop', {
+      participantId: participant.id,
+    });
   }
 }
