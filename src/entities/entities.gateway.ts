@@ -4,19 +4,19 @@ import {
   SubscribeMessage,
   MessageBody,
   ConnectedSocket,
-  WsResponse,
 } from '@nestjs/websockets';
 import { EntitiesService } from './entities.service';
 import { CreateEntityDto } from './dto/create-entity.dto';
 import { UpdateEntityDto } from './dto/update-entity.dto';
 import { Server, Socket } from 'socket.io';
 import { UseGuards } from '@nestjs/common';
-import { WsGuard } from '../security/guards/ws-guard.guard';
-import { DiagramsService } from 'src/diagrams/diagrams.service';
 import { Entity } from './entities/entity.entity';
+import { WsGuard } from '../security/guards/ws-guard.guard';
+import { WsIsEditorGuard } from '../security/guards/ws-is-editor.guard';
 import { Participant } from '../participants/entities/participant.entity';
+import { ParticipantsService } from '../participants/participants.service';
 
-@UseGuards(WsGuard)
+@UseGuards(WsGuard, WsIsEditorGuard)
 @WebSocketGateway(Number(process.env.WS_PORT), {
   cors: {
     origin: process.env.WS_ORIGINS.split(','),
@@ -26,7 +26,7 @@ import { Participant } from '../participants/entities/participant.entity';
 export class EntitiesGateway {
   constructor(
     private readonly entitiesService: EntitiesService,
-    private readonly diagramsService: DiagramsService,
+    private readonly participantService: ParticipantsService,
   ) {}
 
   @WebSocketServer()
@@ -34,11 +34,11 @@ export class EntitiesGateway {
 
   @SubscribeMessage('create')
   async create(
-    @ConnectedSocket() client: Socket,
     @MessageBody() createEntityDto: CreateEntityDto,
+    @ConnectedSocket() client: Socket,
   ) {
-    // TODO: Grant the user can access the diagram
     const caller: Participant = client.data.participant;
+    console.log(caller);
     const entity = await this.entitiesService.create(
       createEntityDto as unknown as Entity,
     );
@@ -51,7 +51,22 @@ export class EntitiesGateway {
   }
 
   @SubscribeMessage('delete')
-  delete(@MessageBody() id: number) {
-    //
+  async delete(@ConnectedSocket() client: Socket) {
+    // FIXME: Not reaching this point
+    const caller: Participant = client.data.participant;
+    console.log(caller);
+    const participant = await this.participantService.findOne(caller.id);
+    if (participant.grabbedId == null) {
+      return;
+    }
+    await this.entitiesService.remove(participant.grabbedId);
+
+    this.server
+      .to(String(caller.diagramId))
+      .emit('drop', { participantId: caller.id });
+
+    this.server
+      .to(String(caller.diagramId))
+      .emit('delete', participant.grabbedId);
   }
 }
