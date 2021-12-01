@@ -40,10 +40,10 @@ export class Entity extends Base {
   @Column({ name: 'diagram_id', update: false })
   diagramId: number;
 
-  @Column({ name: 'origin_id', update: false, nullable: true })
+  @Column({ name: 'origin_id', update: true, nullable: true })
   originId: number;
 
-  @Column({ name: 'target_id', update: false, nullable: true })
+  @Column({ name: 'target_id', update: true, nullable: true })
   targetId: number;
 
   @ManyToOne(() => Diagram, (diagram: Diagram) => diagram.entities, {

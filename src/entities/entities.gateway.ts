@@ -38,7 +38,6 @@ export class EntitiesGateway {
     @ConnectedSocket() client: Socket,
   ) {
     const caller: Participant = client.data.participant;
-    console.log(caller);
     const entity = await this.entitiesService.create(
       createEntityDto as unknown as Entity,
     );
@@ -46,15 +45,22 @@ export class EntitiesGateway {
   }
 
   @SubscribeMessage('patch')
-  patch(@MessageBody() updateEntityDto: UpdateEntityDto) {
-    //
+  async patch(
+    @MessageBody() updateEntityDto: UpdateEntityDto,
+    @ConnectedSocket() client: Socket,
+  ) {
+    const caller: Participant = client.data.participant;
+    const entity = await this.entitiesService.update(
+      updateEntityDto.id,
+      updateEntityDto as unknown as Entity,
+    );
+    this.server.to(String(caller.diagramId)).emit('patch', entity);
   }
 
   @SubscribeMessage('delete')
   async delete(@ConnectedSocket() client: Socket) {
     // FIXME: Not reaching this point
     const caller: Participant = client.data.participant;
-    console.log(caller);
     const participant = await this.participantService.findOne(caller.id);
     if (participant.grabbedId == null) {
       return;
