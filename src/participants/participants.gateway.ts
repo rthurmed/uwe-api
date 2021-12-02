@@ -33,6 +33,7 @@ export class ParticipantsGateway {
 
   // join
   // leave
+  // me
   // move
   // grab
   // drop
@@ -57,6 +58,8 @@ export class ParticipantsGateway {
     // Join the room (https://socket.io/docs/v4/rooms/)
     client.join(String(id));
     this.server.to(String(id)).emit('join', newParticipant);
+
+    client.emit('me', newParticipant.id);
   }
 
   @UseGuards(WsParticipantGuard)
