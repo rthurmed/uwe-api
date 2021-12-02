@@ -7,6 +7,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { WsIsEditorGuard } from 'src/security/guards/ws-is-editor.guard';
 import { DiagramsService } from '../diagrams/diagrams.service';
 import { WsGuard } from '../security/guards/ws-guard.guard';
 import { WsParticipantGuard } from '../security/guards/ws-participant.guard';
@@ -84,7 +85,7 @@ export class ParticipantsGateway {
     });
   }
 
-  @UseGuards(WsParticipantGuard)
+  @UseGuards(WsIsEditorGuard)
   @SubscribeMessage('grab')
   async grab(@MessageBody() id: number, @ConnectedSocket() client: Socket) {
     const caller: Participant = client.data.participant;
@@ -98,7 +99,7 @@ export class ParticipantsGateway {
     });
   }
 
-  @UseGuards(WsParticipantGuard)
+  @UseGuards(WsIsEditorGuard)
   @SubscribeMessage('drop')
   async drop(@ConnectedSocket() client: Socket) {
     const caller: Participant = client.data.participant;

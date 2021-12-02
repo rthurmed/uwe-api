@@ -35,10 +35,10 @@ export class WsIsEditorGuard implements CanActivate {
         );
 
         const result = permissions.find((permission: Permission) =>
-          [AccessLevel.READ, AccessLevel.OWNER].includes(permission.level),
+          [AccessLevel.WRITE, AccessLevel.OWNER].includes(permission.level),
         );
 
-        resolve(result !== null);
+        resolve(!!result);
       } catch (e) {
         resolve(false);
       }
