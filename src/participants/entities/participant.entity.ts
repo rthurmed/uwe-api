@@ -23,17 +23,19 @@ export class Participant extends Base {
   @Column({ name: 'diagram_id', update: false })
   diagramId: number;
 
-  @Column({ name: 'grabbed_id', update: false, nullable: true })
+  @Column({ name: 'grabbed_id', update: true, nullable: true })
   grabbedId: number;
 
   @ManyToOne(() => Diagram, (diagram: Diagram) => diagram.participants, {
     nullable: false,
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'diagram_id' })
   diagram: Diagram;
 
   @OneToOne(() => Entity, {
     nullable: true,
+    onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'grabbed_id' })
   grabbed: Entity;

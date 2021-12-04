@@ -6,9 +6,18 @@ import { EntitiesService } from './entities.service';
 import { EntitiesGateway } from './entities.gateway';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Entity } from './entities/entity.entity';
+import { ParticipantsService } from '../participants/participants.service';
+import { Participant } from '../participants/entities/participant.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Entity, Diagram, Permission])],
-  providers: [EntitiesGateway, EntitiesService, DiagramsService],
+  imports: [
+    TypeOrmModule.forFeature([Entity, Participant, Diagram, Permission]),
+  ],
+  providers: [
+    EntitiesGateway,
+    EntitiesService,
+    ParticipantsService,
+    DiagramsService,
+  ],
 })
 export class EntitiesModule {}

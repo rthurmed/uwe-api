@@ -7,6 +7,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { WsIsEditorGuard } from 'src/security/guards/ws-is-editor.guard';
 import { DiagramsService } from '../diagrams/diagrams.service';
 import { WsGuard } from '../security/guards/ws-guard.guard';
 import { WsParticipantGuard } from '../security/guards/ws-participant.guard';
@@ -32,6 +33,7 @@ export class ParticipantsGateway {
 
   // join
   // leave
+  // me
   // move
   // grab
   // drop
@@ -56,8 +58,11 @@ export class ParticipantsGateway {
     // Join the room (https://socket.io/docs/v4/rooms/)
     client.join(String(id));
     this.server.to(String(id)).emit('join', newParticipant);
+
+    client.emit('me', newParticipant.id);
   }
 
+  @UseGuards(WsParticipantGuard)
   @SubscribeMessage('leave')
   async leave(@ConnectedSocket() client: Socket) {
     const participant: Participant = client.data.participant;
@@ -66,8 +71,8 @@ export class ParticipantsGateway {
     client.data = null;
   }
 
-  @SubscribeMessage('move')
   @UseGuards(WsParticipantGuard)
+  @SubscribeMessage('move')
   async move(@MessageBody() dto: MoveDTO, @ConnectedSocket() client: Socket) {
     const caller: Participant = client.data.participant;
     const participant = await this.participantsService.move(
@@ -83,13 +88,27 @@ export class ParticipantsGateway {
     });
   }
 
+  @UseGuards(WsIsEditorGuard)
   @SubscribeMessage('grab')
-  grab(@MessageBody() id: number) {
-    //
+  async grab(@MessageBody() id: number, @ConnectedSocket() client: Socket) {
+    const caller: Participant = client.data.participant;
+    const participant = await this.participantsService.grab(caller.id, id);
+    if (participant.grabbedId !== id) {
+      return;
+    }
+    this.server.to(String(participant.diagramId)).emit('grab', {
+      participantId: participant.id,
+      entityId: participant.grabbedId,
+    });
   }
 
+  @UseGuards(WsIsEditorGuard)
   @SubscribeMessage('drop')
-  drop(@MessageBody() id: number) {
-    //
+  async drop(@ConnectedSocket() client: Socket) {
+    const caller: Participant = client.data.participant;
+    const participant = await this.participantsService.drop(caller.id);
+    this.server.to(String(participant.diagramId)).emit('drop', {
+      participantId: participant.id,
+    });
   }
 }
