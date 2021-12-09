@@ -44,4 +44,19 @@ export class UsersService {
     );
     return new FindUserResponseDTO(response.data);
   }
+
+  async findByEmail(email: string): Promise<FindUserResponseDTO> {
+    await this.authenticate();
+    const response: AxiosResponse = await lastValueFrom(
+      await this.httpService.get(`${this.endpointUsers}/?email=${email}`, {
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+        },
+      }),
+    );
+    if (response.data.length < 1) {
+      return null;
+    }
+    return new FindUserResponseDTO(response.data[0]);
+  }
 }

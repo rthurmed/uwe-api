@@ -1,4 +1,12 @@
-import { Controller, Post, Body, Param, Put, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Param,
+  Put,
+  UseGuards,
+  BadRequestException,
+} from '@nestjs/common';
 import { PermissionsService } from './permissions.service';
 import { CreatePermissionDTO } from './dto/create-permission.dto';
 import { UpdatePermissionDTO } from './dto/update-permission.dto';
@@ -11,11 +19,15 @@ import { Request } from 'express';
 import { ProjectOwnerCreateGuard } from './guards/project-owner-create.guard';
 import { ProjectOwnerUpdateGuard } from './guards/project-owner-update.guard';
 import { OnlySubjectUserGuard } from './guards/only-subject-user.guard';
+import { UsersService } from 'src/users/users.service';
 
 @Controller('permissions')
 @Resource(Permission.name)
 export class PermissionsController extends BaseController<Permission> {
-  constructor(private readonly permissionsService: PermissionsService) {
+  constructor(
+    private readonly permissionsService: PermissionsService,
+    private readonly usersService: UsersService,
+  ) {
     super(permissionsService);
   }
 
@@ -38,9 +50,17 @@ export class PermissionsController extends BaseController<Permission> {
   async create(
     @Body() createPermissionDto: CreatePermissionDTO,
   ): Promise<Permission> {
-    return this.permissionsService.create(
-      createPermissionDto as unknown as Permission,
-    );
+    const user = await this.usersService.findByEmail(createPermissionDto.email);
+    if (user == null) {
+      throw new BadRequestException('User not found');
+    }
+
+    const permission = new Permission();
+    permission.userId = user.id;
+    permission.level = createPermissionDto.level;
+    permission.projectId = createPermissionDto.projectId;
+
+    return this.permissionsService.create(permission);
   }
 
   @UseGuards(ProjectOwnerUpdateGuard)
