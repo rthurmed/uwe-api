@@ -6,6 +6,11 @@ import {
   Put,
   UseGuards,
   BadRequestException,
+  Get,
+  Query,
+  Req,
+  DefaultValuePipe,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { PermissionsService } from './permissions.service';
 import { CreatePermissionDTO } from './dto/create-permission.dto';
@@ -13,13 +18,14 @@ import { UpdatePermissionDTO } from './dto/update-permission.dto';
 import { AcceptPermissionDTO } from './dto/accept-permission.dto';
 import { BaseController } from '../core/base.controller';
 import { Permission } from './entities/permission.entity';
-import { Resource } from 'nest-keycloak-connect';
+import { AuthenticatedUser, Resource } from 'nest-keycloak-connect';
 import { FindConditions, FindManyOptions } from 'typeorm';
 import { Request } from 'express';
 import { ProjectOwnerCreateGuard } from './guards/project-owner-create.guard';
 import { ProjectOwnerUpdateGuard } from './guards/project-owner-update.guard';
 import { OnlySubjectUserGuard } from './guards/only-subject-user.guard';
 import { UsersService } from 'src/users/users.service';
+import { Pagination } from 'nestjs-typeorm-paginate';
 
 @Controller('permissions')
 @Resource(Permission.name)
@@ -43,6 +49,30 @@ export class PermissionsController extends BaseController<Permission> {
         relations: ['project'],
       });
     });
+  }
+
+  @Get('/invites')
+  async findInvites(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit = 20,
+    @Req() request: Request,
+    @AuthenticatedUser() user,
+  ): Promise<Pagination<Permission>> {
+    return this.service.paginate(
+      {
+        page,
+        limit,
+        route: request.url,
+      },
+      {
+        where: {
+          userId: user.sub,
+          accepted: false,
+          revoked: false,
+        },
+        relations: ['project'],
+      },
+    );
   }
 
   @UseGuards(ProjectOwnerCreateGuard)
