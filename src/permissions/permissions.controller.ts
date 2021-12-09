@@ -55,6 +55,14 @@ export class PermissionsController extends BaseController<Permission> {
       throw new BadRequestException('User not found');
     }
 
+    const permissions = await this.permissionsService.findAcceptedByUserId(
+      user.id,
+      [createPermissionDto.projectId.toString()],
+    );
+    if (permissions.length > 0) {
+      throw new BadRequestException('User already member');
+    }
+
     const permission = new Permission();
     permission.userId = user.id;
     permission.level = createPermissionDto.level;
