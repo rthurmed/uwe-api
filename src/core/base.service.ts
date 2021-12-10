@@ -31,8 +31,8 @@ export class BaseService<T> {
     return this.repository.count(searchOptions);
   }
 
-  findAll(): Promise<T[]> {
-    return this.repository.find();
+  findAll(conditions?: FindConditions<T> | FindManyOptions<T>): Promise<T[]> {
+    return this.repository.find(conditions);
   }
 
   findOne(id: number, options?: FindOneOptions<T>): Promise<T> {
