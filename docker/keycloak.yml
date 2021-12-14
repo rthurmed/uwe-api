@@ -25,6 +25,7 @@ services:
     image: jboss/keycloak:13.0.0
     ports:
       - "28080:8080"
+      - "28443:8443"
     restart: unless-stopped
     networks:
       - local-keycloak
