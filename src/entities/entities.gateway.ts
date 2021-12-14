@@ -65,6 +65,19 @@ export class EntitiesGateway {
     if (participant.grabbedId == null) {
       return;
     }
+
+    const currentEntity = await this.entitiesService.findOne(
+      participant.grabbedId,
+      {
+        relations: ['targetEntities', 'originEntities'],
+      },
+    );
+
+    const entitiesIds: Array<number> = [
+      ...currentEntity.targetEntities.map((e) => e.id),
+      ...currentEntity.originEntities.map((e) => e.id),
+    ];
+
     await this.entitiesService.remove(participant.grabbedId);
 
     this.server
@@ -74,5 +87,10 @@ export class EntitiesGateway {
     this.server
       .to(String(caller.diagramId))
       .emit('delete', participant.grabbedId);
+
+    // Also delete target and origin entities
+    entitiesIds.forEach((id) => {
+      this.server.to(String(caller.diagramId)).emit('delete', id);
+    });
   }
 }
