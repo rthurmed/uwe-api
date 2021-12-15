@@ -2,6 +2,7 @@ import { UseGuards } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
+  OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -22,11 +23,15 @@ import { ParticipantsService } from './participants.service';
     credentials: true,
   },
 })
-export class ParticipantsGateway {
+export class ParticipantsGateway implements OnGatewayDisconnect {
   constructor(
     private readonly participantsService: ParticipantsService,
     private readonly diagramsService: DiagramsService,
   ) {}
+
+  handleDisconnect(client: Socket) {
+    this.leave(client);
+  }
 
   @WebSocketServer()
   server: Server;
