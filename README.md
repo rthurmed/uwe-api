@@ -41,17 +41,3 @@ cp .env.prod .env
 docker build -t uwe-api .
 docker run -d --env-file .env --network=host uwe-api
 ```
-
-## Database Migrations
-
-Migrations are managed with typeorm and stored at `resources/migrations`. Migrations are applied automatically as the system starts
-
-To create a new migration:
-
-```bash
-# must have "typeorm" installed globally
-$ npm i -g typeorm
-
-# then can create a js migration
-$ typeorm migration:create -n MigrationName -o
-```
